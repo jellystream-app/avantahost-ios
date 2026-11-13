@@ -1,0 +1,8 @@
+*.xcodeproj
+build/
+Payload/
+*.ipa
+.DS_Store
+xcuserdata/
+.claude/
+Sources/App/Avantahost.entitlements

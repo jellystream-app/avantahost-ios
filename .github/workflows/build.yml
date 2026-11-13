@@ -1,0 +1,28 @@
+name: build
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build info
+        run: printf 'enum BuildInfo {\n    static let sha = "%s"\n}\n' "$(echo $GITHUB_SHA | cut -c1-7)" > Sources/Core/BuildInfo.swift
+      - name: XcodeGen
+        run: brew install xcodegen && xcodegen generate
+      - name: Build
+        run: |
+          xcodebuild -project Avantahost.xcodeproj -scheme Avantahost -configuration Release \
+            -sdk iphoneos -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+      - name: IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/Avantahost.app Payload/
+          zip -qr avantahost-ios.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: avantahost-ios-ipa
+          path: avantahost-ios.ipa
