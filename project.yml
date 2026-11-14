@@ -38,6 +38,7 @@ targets:
       - Sources/Core/ApiError.swift
       - Sources/Core/Keychain.swift
       - Sources/Core/SessionCookie.swift
+      - Sources/Core/Flex.swift
       - Sources/Core/Models.swift
       - Sources/Core/ServerDetail.swift
       - Sources/Core/ServiceList.swift
