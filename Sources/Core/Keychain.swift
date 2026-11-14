@@ -21,6 +21,24 @@ enum Keychain {
         SecItemAdd(q as CFDictionary, nil)
     }
 
+    /// Kopie in der App Group, damit das Widget die Sitzung lesen kann. Ohne Berechtigung passiert nichts.
+    static func writeShared(_ key: String, _ value: String) {
+        guard let group = WidgetShare.groupId else { return }
+        var q = base(key)
+        q[kSecAttrAccessGroup as String] = group
+        SecItemDelete(q as CFDictionary)
+        q[kSecValueData as String] = Data(value.utf8)
+        q[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        SecItemAdd(q as CFDictionary, nil)
+    }
+
+    static func deleteShared(_ key: String) {
+        guard let group = WidgetShare.groupId else { return }
+        var q = base(key)
+        q[kSecAttrAccessGroup as String] = group
+        SecItemDelete(q as CFDictionary)
+    }
+
     static func delete(_ key: String) {
         SecItemDelete(base(key) as CFDictionary)
     }

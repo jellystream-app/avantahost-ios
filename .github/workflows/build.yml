@@ -21,7 +21,9 @@ jobs:
         run: |
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/Avantahost.app Payload/
+          ls Payload/Avantahost.app/PlugIns/*.appex
           zip -qr avantahost-ios.ipa Payload
+          unzip -l avantahost-ios.ipa | grep -c '\.appex/'
       - uses: actions/upload-artifact@v4
         with:
           name: avantahost-ios-ipa

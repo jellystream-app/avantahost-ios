@@ -7,6 +7,12 @@ targets:
     platform: iOS
     deploymentTarget: "17.0"
     sources: [Sources]
+    dependencies:
+      - target: AvantahostWidget
+    entitlements:
+      path: Config/Avantahost.entitlements
+      properties:
+        com.apple.security.application-groups: [group.de.avantahost.app]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: de.avantahost.app
@@ -22,3 +28,37 @@ targets:
         MARKETING_VERSION: "0.1"
         CURRENT_PROJECT_VERSION: "1"
         TARGETED_DEVICE_FAMILY: "1"
+  AvantahostWidget:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Widget
+      - Sources/Core/ApiClient.swift
+      - Sources/Core/ApiError.swift
+      - Sources/Core/Keychain.swift
+      - Sources/Core/SessionCookie.swift
+      - Sources/Core/Models.swift
+      - Sources/Core/ServerDetail.swift
+      - Sources/Core/ServiceList.swift
+      - Sources/Core/WidgetShare.swift
+      - Sources/Design/Tokens.swift
+    entitlements:
+      path: Config/AvantahostWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.de.avantahost.app]
+    info:
+      path: Config/AvantahostWidget-Info.plist
+      properties:
+        CFBundleDisplayName: Avantahost
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.avantahost.app.widget
+        PRODUCT_NAME: AvantahostWidget
+        SWIFT_VERSION: "5.0"
+        MARKETING_VERSION: "0.1"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        SKIP_INSTALL: YES

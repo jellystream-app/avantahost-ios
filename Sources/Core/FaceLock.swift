@@ -15,6 +15,7 @@ final class FaceLock: ObservableObject {
 
     init() {
         let on = UserDefaults.standard.bool(forKey: Self.key)
+        WidgetShare.setLock(on)
         locked = on
         isOn = on
         autoPrompt = on
@@ -80,12 +81,14 @@ final class FaceLock: ObservableObject {
         switch await evaluate(.deviceOwnerAuthenticationWithBiometrics, reason: reason) {
         case .success:
             UserDefaults.standard.set(on, forKey: Self.key)
+            WidgetShare.setLock(on)
             isOn = on
             return nil
         case .failure(let e):
             if Self.needsPasscode(e), !on,
                case .success = await evaluate(.deviceOwnerAuthentication, reason: "Sperre mit dem Gerätecode aufheben") {
                 UserDefaults.standard.set(false, forKey: Self.key)
+                WidgetShare.setLock(false)
                 isOn = false
                 return nil
             }

@@ -46,6 +46,13 @@ final class ApiClient {
 
     func clearSession() {
         Keychain.delete(Self.tokenKey)
+        Keychain.deleteShared(Self.tokenKey)
+        WidgetShare.clear()
+    }
+
+    /// Legt die Sitzung für das Widget ab (auch für bestehende Anmeldungen vor dem Widget-Update).
+    func shareSession() {
+        if let t = token { Keychain.writeShared(Self.tokenKey, t) }
     }
 
     // MARK: Request
@@ -120,6 +127,7 @@ final class ApiClient {
             throw ApiError.server(http.statusCode, msg)
         }
         Keychain.write(Self.tokenKey, value)
+        Keychain.writeShared(Self.tokenKey, value)
     }
 
     func logout() async {

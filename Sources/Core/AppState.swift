@@ -10,6 +10,7 @@ final class AppState: ObservableObject {
 
     func bootstrap() async {
         guard api.hasToken else { phase = .loggedOut; return }
+        api.shareSession()
         await refreshUser()
     }
 
@@ -33,6 +34,7 @@ final class AppState: ObservableObject {
 
     func logout() async {
         await api.logout()
+        WidgetShare.reset()
         phase = .loggedOut
     }
 }

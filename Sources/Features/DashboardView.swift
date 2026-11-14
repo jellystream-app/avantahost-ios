@@ -10,43 +10,11 @@ final class DashboardModel: ObservableObject {
     func load(_ api: ApiClient) async {
         loading = true; error = nil
         defer { loading = false }
-        var all: [Service] = []
-        var firstError: Error?
-        do {
-            let g: ServerListResponse = try await api.get("/api/server-dashboard")
-            all += g.servers.map { Service(id: $0.id, name: $0.name, plan: $0.planName, status: ServerStatus($0.status),
-                                           provider: .game, shared: $0.shared) }
-        } catch { firstError = error }
-        do {
-            let k: ServerListResponse = try await api.get("/api/servers")
-            all += k.servers.filter { $0.provider == "fireapi" }.map {
-                Service(id: $0.id, name: $0.name, plan: $0.planName, status: ServerStatus($0.status),
-                        provider: .kvm, shared: $0.shared)
-            }
-        } catch { firstError = firstError ?? error }
-        services = all
-        if all.isEmpty, let e = firstError { error = e.localizedDescription }
-        await refreshGameStatus(api)
+        let r = await ServiceList.load(api)
+        services = r.services
+        if let e = r.error { error = e.localizedDescription }
+        WidgetShare.publish(services)
         QuickActions.shared.update(services)
-    }
-
-    /// Die Liste der Gameserver enthält nur "active", nicht ob der Server wirklich läuft.
-    /// Den echten Zustand gibt es nur pro Server, deshalb wird er hier einzeln nachgeladen.
-    private func refreshGameStatus(_ api: ApiClient) async {
-        let games = services.filter { $0.provider == .game }
-        guard !games.isEmpty else { return }
-        let live: [Int: ServerStatus] = await withTaskGroup(of: (Int, ServerStatus?).self) { group in
-            for s in games {
-                group.addTask { (s.id, try? await ServerDetailLoader.load(s, api: api).status) }
-            }
-            var out: [Int: ServerStatus] = [:]
-            for await (id, st) in group { if let st { out[id] = st } }
-            return out
-        }
-        services = services.map { s in
-            guard s.provider == .game, let st = live[s.id] else { return s }
-            return Service(id: s.id, name: s.name, plan: s.plan, status: st, provider: .game, shared: s.shared)
-        }
     }
 }
 
