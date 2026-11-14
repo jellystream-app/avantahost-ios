@@ -19,7 +19,7 @@ struct AvantahostApp: App {
                 .environmentObject(platform)
                 .onChange(of: scene) { _, p in
                     if p == .background { lock.lockIfNeeded() }
-                    if p == .active, lock.locked { Task { await lock.unlock() } }
+                    if p == .active, lock.locked { Task { await lock.autoUnlock() } }
                     if p == .active { Task { await platform.refresh(api: state.api) } }
                 }
                 .tint(Tokens.accent)
@@ -88,8 +88,10 @@ struct LockView: View {
             Tokens.bg.ignoresSafeArea()
             VStack(spacing: 16) {
                 Image(systemName: "lock.fill").font(.system(size: 36)).foregroundStyle(Tokens.accent)
+                ErrorLine(text: lock.message)
                 PrimaryButton(title: "Entsperren") { Task { await lock.unlock() } }
             }.padding(Tokens.pad)
         }
+        .task { await lock.autoUnlock() }
     }
 }

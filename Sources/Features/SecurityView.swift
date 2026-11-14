@@ -5,18 +5,18 @@ struct SecurityView: View {
     @EnvironmentObject var lock: FaceLock
     @State private var info: SecurityInfo?
     @State private var error: String?
-    @State private var faceOn = UserDefaults.standard.bool(forKey: FaceLock.key)
+    @State private var lockError: String?
 
     var body: some View {
         ScrollView {
             VStack(spacing: Tokens.gap) {
                 ErrorLine(text: error)
+                ErrorLine(text: lockError)
                 Card {
-                    Toggle("Mit Face ID sperren", isOn: $faceOn)
+                    Toggle("Mit \(FaceLock.biometryName) sperren", isOn: Binding(
+                        get: { lock.isOn },
+                        set: { on in Task { lockError = await lock.setEnabled(on) } }))
                         .foregroundStyle(Tokens.text)
-                        .onChange(of: faceOn) { _, on in
-                            Task { if await lock.setEnabled(on) == false { faceOn = lock.enabled } }
-                        }
                 }
                 if let info {
                     Card {

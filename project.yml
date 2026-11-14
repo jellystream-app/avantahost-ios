@@ -16,6 +16,7 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_CFBundleDisplayName: Avantahost
+        INFOPLIST_KEY_NSFaceIDUsageDescription: Avantahost nutzt Face ID, um die App zu entsperren.
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
         SWIFT_VERSION: "5.0"
         MARKETING_VERSION: "0.1"

@@ -22,6 +22,16 @@ struct AccountView: View {
                         }
                     }
                 }
+                NavigationLink { AccountSettingsView() } label: {
+                    Card {
+                        HStack(spacing: 12) {
+                            IconTile(symbol: "person.text.rectangle.fill")
+                            Text("Kontodaten").font(.headline).foregroundStyle(Tokens.text)
+                            Spacer()
+                            Image(systemName: "chevron.right").foregroundStyle(Tokens.dim)
+                        }
+                    }
+                }.buttonStyle(.plain)
                 NavigationLink { SecurityView() } label: {
                     Card {
                         HStack(spacing: 12) {
